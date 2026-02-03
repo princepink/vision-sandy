@@ -1,5 +1,18 @@
-# Mantine Vite template
+# Vision Sandy
+A sandbox project for web app visual design.
 
-Get started with the template by clicking `Use this template` button on the top of the page.
+## Scaffold
+* Mantine Vite template - [Documentation](https://mantine.dev/guides/vite/)
 
-[Documentation](https://mantine.dev/guides/vite/)
+### Packages
+* Hooks
+* Core
+* Form
+* Dates
+* Carousel
+* Spotlight
+* Modals
+* Navigation Progress
+
+### Plugins
+* PostCSS
