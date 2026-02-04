@@ -6,7 +6,7 @@ import { useDisclosure } from '@mantine/hooks';
 
 // 各ページコンポーネント（後ほど作成）
 import Home from './pages/Home';
-// import ReactBitsPage from './pages/ReactBits';
+import ReactBitsPage from './pages/ReactBits';
 // import MotionPage from './pages/Motion';
 // import GsapLenisPage from './pages/GsapLenis';
 // import LenisPage from './pages/Lenis';
@@ -30,8 +30,8 @@ export default function App() {
         <AppShell.Navbar p="md">
           <Stack gap="sm">
             <NavLink component={Link} to="/" label="Home" />
-            {/* <NavLink component={Link} to="/react-bits" label="React Bits" />
-            <NavLink component={Link} to="/motion" label="Framer Motion" />
+            <NavLink component={Link} to="/react-bits" label="React Bits" />
+            {/* <NavLink component={Link} to="/motion" label="Framer Motion" />
             <NavLink component={Link} to="/gsap-lenis" label="GSAP + Lenis" />
             <NavLink component={Link} to="/lenis" label="Lenis" /> */}
           </Stack>
@@ -40,8 +40,8 @@ export default function App() {
         <AppShell.Main>
           <Routes>
             <Route path="/" element={<Home />} />
-            {/* <Route path="/react-bits" element={<ReactBitsPage />} />
-            <Route path="/motion" element={<MotionPage />} />
+            <Route path="/react-bits" element={<ReactBitsPage />} />
+            {/* <Route path="/motion" element={<MotionPage />} />
             <Route path="/gsap-lenis" element={<GsapLenisPage />} />
             <Route path="/lenis" element={<LenisPage />} /> */}
           </Routes>
