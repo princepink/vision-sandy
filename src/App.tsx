@@ -8,7 +8,7 @@ import { useDisclosure } from '@mantine/hooks';
 import Home from './pages/Home';
 import ReactBitsPage from './pages/ReactBits';
 // import MotionPage from './pages/Motion';
-// import GsapLenisPage from './pages/GsapLenis';
+import GsapLenisPage from './pages/GsapLenis';
 // import LenisPage from './pages/Lenis';
 
 export default function App() {
@@ -31,9 +31,8 @@ export default function App() {
           <Stack gap="sm">
             <NavLink component={Link} to="/" label="Home" />
             <NavLink component={Link} to="/react-bits" label="React Bits" />
-            {/* <NavLink component={Link} to="/motion" label="Framer Motion" />
+            {/* <NavLink component={Link} to="/motion" label="Framer Motion" /> */}
             <NavLink component={Link} to="/gsap-lenis" label="GSAP + Lenis" />
-            <NavLink component={Link} to="/lenis" label="Lenis" /> */}
           </Stack>
         </AppShell.Navbar>
 
@@ -41,9 +40,8 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/react-bits" element={<ReactBitsPage />} />
-            {/* <Route path="/motion" element={<MotionPage />} />
+            {/* <Route path="/motion" element={<MotionPage />} /> */}
             <Route path="/gsap-lenis" element={<GsapLenisPage />} />
-            <Route path="/lenis" element={<LenisPage />} /> */}
           </Routes>
         </AppShell.Main>
       </AppShell>
