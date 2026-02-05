@@ -15,70 +15,80 @@ export default function GsapLenisPage() {
   const sectionRef = useRef(null);
   const triggerRef = useRef(null);
 
-useEffect(() => {
-  // 以前のScrollTriggerを一度リセット
-  ScrollTrigger.getAll().forEach(t => t.kill());
+  const blueBoxRef = useRef(null);
 
-  // 1. 各要素のアニメーションを個別に設定（タイムラインを使わない独立した監視）
-  
-  // Sync Box (MantineのBoxなど)
-  if (scrollBoxRef.current) {
+  useEffect(() => {
+    // 1. 回転・拡大アニメーション (スクロール同期)
     gsap.to(scrollBoxRef.current, {
       rotate: 360,
-      scale: 1.5,
+      scale: 3,
       borderRadius: '50%',
       scrollTrigger: {
         trigger: scrollBoxRef.current,
-        start: "top 80%",
+        start: "top 80%", 
         end: "bottom 20%",
-        scrub: 1,
-        markers: { startColor: "orange", endColor: "orange", label: "Sync Box" }, // 色を変えて識別
-        id: "sync",
-      }
+        scrub: 1, // 1秒遅れて追従する滑らかな同期
+      },
     });
-  }
 
-  // 背景パララックス
-  if (bgRef.current) {
+    // 1-2. 回転・拡大アニメーション (スクロール同期)
+    gsap.to(blueBoxRef.current, {
+      rotate: 360,
+      scale: 3,
+      borderRadius: '50%',
+      scrollTrigger: {
+        trigger: blueBoxRef.current,
+        start: "top 80%", 
+        end: "bottom 20%",
+        scrub: 1, // 1秒遅れて追従する滑らかな同期
+      },
+    });
+
+    // 2. 背景のパララックス (ゆっくり動く)
     gsap.to(bgRef.current, {
       y: -100,
+      ease: "none",
       scrollTrigger: {
         trigger: bgRef.current,
         start: "top bottom",
         end: "bottom top",
         scrub: true,
-      }
+      },
     });
-  }
 
-  // 2. 水平スクロール (Pinを伴う重い処理)
-  if (triggerRef.current && sectionRef.current) {
-    gsap.fromTo(
+    // 3. 前面のカードパララックス (速く動く + 少し遅れる)
+    gsap.to(floatCardRef.current, {
+      y: -250,
+      scrollTrigger: {
+        trigger: floatCardRef.current,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: 2, 
+      },
+    });
+
+    // --- 4. 水平スクロールの実装 ---
+    const pin = gsap.fromTo(
       sectionRef.current,
       { translateX: 0 },
       {
-        translateX: "-200vw",
+        translateX: "-200vw", // コンテンツ3つ分（100vw * 2）を左に流す
         ease: "none",
         scrollTrigger: {
           trigger: triggerRef.current,
-          start: "top top",
-          end: "+=2000",
+          start: "top top",      // セクションが画面のてっぺんに来たら開始
+          end: "2000 top",       // 2000px分のスクロールが終わるまで固定
           scrub: 0.6,
-          pin: true,
-          markers: { startColor: "red", endColor: "red", label: "Horizontal" },
-          id: "horizontal",
+          pin: true,             // 画面をその場に固定する！
+          anticipatePin: 1,
         },
       }
     );
-  }
 
-  // 最後にリフレッシュ
-  ScrollTrigger.refresh();
-
-  return () => {
-    ScrollTrigger.getAll().forEach(t => t.kill());
-  };
-}, []);
+    return () => {
+      pin.kill(); // クリーンアップ
+    };
+  }, []);
 
   return (
     <ReactLenis root options={{ lerp: 0.05, duration: 1.5 }}>
@@ -111,9 +121,8 @@ useEffect(() => {
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={100} style={{ minHeight: '100vh', alignItems: 'center' }}>
             <Box>
               <Title order={2} mb="xl">Transform Sync</Title>
-              <div ref={scrollBoxRef} style={{ display: 'inline-block' }}>
               <Paper 
-//                ref={scrollBoxRef}
+                ref={scrollBoxRef}
                 shadow="xl"
                 style={{ 
                   width: 200, height: 200, 
@@ -124,7 +133,6 @@ useEffect(() => {
               >
                 Sync Box
               </Paper>
-              </div>
             </Box>
 
             <Box style={{ position: 'relative' }}>
@@ -146,19 +154,18 @@ useEffect(() => {
             </Box>
           </SimpleGrid>
 
-          {/* <Center style={{ height: '80vh' }}>
+          <Center style={{ height: '80vh' }}>
             <Text c="dimmed">--- End of Lab ---</Text>
-          </Center> */}
-
+          </Center>
         </Container>
 
         <Container size="md" style={{ height: '150vh' }}>
             <Center style={{ height: '100vh' }}><Title>Scroll Down for Horizontal Section</Title></Center>
-            <Box ref={scrollBoxRef} style={{ width: 100, height: 100, backgroundColor: 'blue' }} />
+            <Box ref={blueBoxRef} style={{ width: 100, height: 100, backgroundColor: 'blue' }} />
         </Container>
 
         {/* --- 5. 水平スクロールセクション --- */}
-        <Box ref={triggerRef} style={{ display: 'block', width: '100%' }}>
+        <Box ref={triggerRef}>
           <div style={{ height: '100vh', overflow: 'hidden' }}>
             <Flex
               ref={sectionRef}
