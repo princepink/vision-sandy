@@ -1,5 +1,5 @@
 # Vision Sandy
-A sandbox project for web app visual design.
+A sandbox project of visual designs for web apps.
 
 ## Scaffold
 * Mantine Vite template - [Documentation](https://mantine.dev/guides/vite/)
@@ -16,3 +16,8 @@ A sandbox project for web app visual design.
 
 ### Plugins
 * PostCSS
+
+## Checking...
+- React Bits
+- Motion
+- GSAP + Lenis
