@@ -16,62 +16,53 @@ export default function GsapLenisPage() {
   const triggerRef = useRef(null);
 
   useEffect(() => {
-    // 1. 回転・拡大アニメーション (スクロール同期)
+    // --- 1. 回転・拡大 (Sync Box) ---
     gsap.to(scrollBoxRef.current, {
-      rotate: 360,
-      scale: 3,
-      borderRadius: '50%',
+      rotate: 360, scale: 1.5, borderRadius: '50%',
       scrollTrigger: {
         trigger: scrollBoxRef.current,
-        start: "top 80%", 
+        start: "top 80%",
         end: "bottom 20%",
-        scrub: 1, // 1秒遅れて追従する滑らかな同期
-      },
+        scrub: 1,
+        invalidateOnRefresh: true, // リフレッシュ時に再計算させる
+      markers: true, // ★ これを追加
+      id: "sync-box", // ★ 識別用
+      }
     });
-
-    // 2. 背景のパララックス (ゆっくり動く)
+  
+    // --- 2. 背景パララックス ---
     gsap.to(bgRef.current, {
-      y: -100,
-      ease: "none",
-      scrollTrigger: {
-        trigger: bgRef.current,
-        start: "top bottom",
-        end: "bottom top",
-        scrub: true,
-      },
+      y: -100, ease: "none",
+      scrollTrigger: { trigger: bgRef.current, start: "top bottom", end: "bottom top", scrub: true }
     });
-
-    // 3. 前面のカードパララックス (速く動く + 少し遅れる)
-    gsap.to(floatCardRef.current, {
-      y: -250,
-      scrollTrigger: {
-        trigger: floatCardRef.current,
-        start: "top bottom",
-        end: "bottom top",
-        scrub: 2, 
-      },
-    });
-
-    // --- 4. 水平スクロールの実装 ---
+  
+    // --- 3. 水平スクロール (この pin 設定がページ高さを変える主因) ---
     const pin = gsap.fromTo(
       sectionRef.current,
       { translateX: 0 },
       {
-        translateX: "-200vw", // コンテンツ3つ分（100vw * 2）を左に流す
+        translateX: "-200vw",
         ease: "none",
         scrollTrigger: {
           trigger: triggerRef.current,
-          start: "top top",      // セクションが画面のてっぺんに来たら開始
-          end: "2000 top",       // 2000px分のスクロールが終わるまで固定
+          start: "top top",
+          end: "+=2000", // "2000px分" という指定の仕方に変えると安定します
           scrub: 0.6,
-          pin: true,             // 画面をその場に固定する！
+          pin: true,
           anticipatePin: 1,
         },
       }
     );
 
+    // 全てのScrollTriggerをドキュメント上の位置順に並び替え、計算を同期させる
+    ScrollTrigger.sort();
+
+    // 重要：最後にすべての位置関係を再計算させる
+    ScrollTrigger.refresh();
+  
     return () => {
-      pin.kill(); // クリーンアップ
+      // クリーンアップでScrollTriggerをすべて消去する
+      ScrollTrigger.getAll().forEach(t => t.kill());
     };
   }, []);
 
@@ -139,9 +130,10 @@ export default function GsapLenisPage() {
             </Box>
           </SimpleGrid>
 
-          <Center style={{ height: '80vh' }}>
+          {/* <Center style={{ height: '80vh' }}>
             <Text c="dimmed">--- End of Lab ---</Text>
-          </Center>
+          </Center> */}
+
         </Container>
 
         <Container size="md" style={{ height: '150vh' }}>
@@ -150,7 +142,7 @@ export default function GsapLenisPage() {
         </Container>
 
         {/* --- 5. 水平スクロールセクション --- */}
-        <Box ref={triggerRef}>
+        <Box ref={triggerRef} style={{ display: 'block', width: '100%' }}>
           <div style={{ height: '100vh', overflow: 'hidden' }}>
             <Flex
               ref={sectionRef}
