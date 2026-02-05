@@ -15,29 +15,45 @@ export default function GsapLenisPage() {
   const sectionRef = useRef(null);
   const triggerRef = useRef(null);
 
-  useEffect(() => {
-    // --- 1. 回転・拡大 (Sync Box) ---
+useEffect(() => {
+  // 以前のScrollTriggerを一度リセット
+  ScrollTrigger.getAll().forEach(t => t.kill());
+
+  // 1. 各要素のアニメーションを個別に設定（タイムラインを使わない独立した監視）
+  
+  // Sync Box (MantineのBoxなど)
+  if (scrollBoxRef.current) {
     gsap.to(scrollBoxRef.current, {
-      rotate: 360, scale: 1.5, borderRadius: '50%',
+      rotate: 360,
+      scale: 1.5,
+      borderRadius: '50%',
       scrollTrigger: {
         trigger: scrollBoxRef.current,
         start: "top 80%",
         end: "bottom 20%",
         scrub: 1,
-        invalidateOnRefresh: true, // リフレッシュ時に再計算させる
-      markers: true, // ★ これを追加
-      id: "sync-box", // ★ 識別用
+        markers: { startColor: "orange", endColor: "orange", label: "Sync Box" }, // 色を変えて識別
+        id: "sync",
       }
     });
-  
-    // --- 2. 背景パララックス ---
+  }
+
+  // 背景パララックス
+  if (bgRef.current) {
     gsap.to(bgRef.current, {
-      y: -100, ease: "none",
-      scrollTrigger: { trigger: bgRef.current, start: "top bottom", end: "bottom top", scrub: true }
+      y: -100,
+      scrollTrigger: {
+        trigger: bgRef.current,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: true,
+      }
     });
-  
-    // --- 3. 水平スクロール (この pin 設定がページ高さを変える主因) ---
-    const pin = gsap.fromTo(
+  }
+
+  // 2. 水平スクロール (Pinを伴う重い処理)
+  if (triggerRef.current && sectionRef.current) {
+    gsap.fromTo(
       sectionRef.current,
       { translateX: 0 },
       {
@@ -46,25 +62,23 @@ export default function GsapLenisPage() {
         scrollTrigger: {
           trigger: triggerRef.current,
           start: "top top",
-          end: "+=2000", // "2000px分" という指定の仕方に変えると安定します
+          end: "+=2000",
           scrub: 0.6,
           pin: true,
-          anticipatePin: 1,
+          markers: { startColor: "red", endColor: "red", label: "Horizontal" },
+          id: "horizontal",
         },
       }
     );
+  }
 
-    // 全てのScrollTriggerをドキュメント上の位置順に並び替え、計算を同期させる
-    ScrollTrigger.sort();
+  // 最後にリフレッシュ
+  ScrollTrigger.refresh();
 
-    // 重要：最後にすべての位置関係を再計算させる
-    ScrollTrigger.refresh();
-  
-    return () => {
-      // クリーンアップでScrollTriggerをすべて消去する
-      ScrollTrigger.getAll().forEach(t => t.kill());
-    };
-  }, []);
+  return () => {
+    ScrollTrigger.getAll().forEach(t => t.kill());
+  };
+}, []);
 
   return (
     <ReactLenis root options={{ lerp: 0.05, duration: 1.5 }}>
@@ -97,8 +111,9 @@ export default function GsapLenisPage() {
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing={100} style={{ minHeight: '100vh', alignItems: 'center' }}>
             <Box>
               <Title order={2} mb="xl">Transform Sync</Title>
+              <div ref={scrollBoxRef} style={{ display: 'inline-block' }}>
               <Paper 
-                ref={scrollBoxRef}
+//                ref={scrollBoxRef}
                 shadow="xl"
                 style={{ 
                   width: 200, height: 200, 
@@ -109,6 +124,7 @@ export default function GsapLenisPage() {
               >
                 Sync Box
               </Paper>
+              </div>
             </Box>
 
             <Box style={{ position: 'relative' }}>
