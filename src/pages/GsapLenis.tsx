@@ -18,75 +18,84 @@ export default function GsapLenisPage() {
   const blueBoxRef = useRef(null);
 
   useEffect(() => {
-    // 1. 回転・拡大アニメーション (スクロール同期)
-    gsap.to(scrollBoxRef.current, {
-      rotate: 360,
-      scale: 3,
-      borderRadius: '50%',
-      scrollTrigger: {
-        trigger: scrollBoxRef.current,
-        start: "top 80%", 
-        end: "bottom 20%",
-        scrub: 1, // 1秒遅れて追従する滑らかな同期
-      },
-    });
-
-    // 1-2. 回転・拡大アニメーション (スクロール同期)
-    gsap.to(blueBoxRef.current, {
-      rotate: 360,
-      scale: 3,
-      borderRadius: '50%',
-      scrollTrigger: {
-        trigger: blueBoxRef.current,
-        start: "top 80%", 
-        end: "bottom 20%",
-        scrub: 1, // 1秒遅れて追従する滑らかな同期
-      },
-    });
-
-    // 2. 背景のパララックス (ゆっくり動く)
-    gsap.to(bgRef.current, {
-      y: -100,
-      ease: "none",
-      scrollTrigger: {
-        trigger: bgRef.current,
-        start: "top bottom",
-        end: "bottom top",
-        scrub: true,
-      },
-    });
-
-    // 3. 前面のカードパララックス (速く動く + 少し遅れる)
-    gsap.to(floatCardRef.current, {
-      y: -250,
-      scrollTrigger: {
-        trigger: floatCardRef.current,
-        start: "top bottom",
-        end: "bottom top",
-        scrub: 2, 
-      },
-    });
-
-    // --- 4. 水平スクロールの実装 ---
-    const pin = gsap.fromTo(
-      sectionRef.current,
-      { translateX: 0 },
-      {
-        translateX: "-200vw", // コンテンツ3つ分（100vw * 2）を左に流す
-        ease: "none",
+    // 以前のScrollTriggerを一度リセット
+    ScrollTrigger.getAll().forEach(t => t.kill());
+  
+    // 1. 各要素のアニメーションを個別に設定（タイムラインを使わない独立した監視）
+    
+    // Sync Box (MantineのBoxなど)
+    if (scrollBoxRef.current) {
+      gsap.to(scrollBoxRef.current, {
+        rotate: 360,
+        scale: 1.5,
+        borderRadius: '50%',
         scrollTrigger: {
-          trigger: triggerRef.current,
-          start: "top top",      // セクションが画面のてっぺんに来たら開始
-          end: "2000 top",       // 2000px分のスクロールが終わるまで固定
-          scrub: 0.6,
-          pin: true,             // 画面をその場に固定する！
-          anticipatePin: 1,
-        },
-      }
-    );
-
+          trigger: scrollBoxRef.current,
+          start: "top 80%",
+          end: "bottom 20%",
+          scrub: 1,
+          markers: { startColor: "orange", endColor: "orange", label: "Sync Box" }, // 色を変えて識別
+          id: "sync",
+        }
+      });
+    }
+    
+    // Blue Box
+    if (blueBoxRef.current) {
+      gsap.to(blueBoxRef.current, {
+        rotate: 360,
+        scale: 1.5,
+        borderRadius: '50%',
+        scrollTrigger: {
+          trigger: blueBoxRef.current,
+          start: "top 80%",
+          end: "bottom 20%",
+          scrub: 1,
+          markers: { startColor: "cyan", endColor: "cyan", label: "Blue Box" }, // 色を変えて識別
+          id: "blue",
+        }
+      });
+    }
+  
+    // 背景パララックス
+    if (bgRef.current) {
+      gsap.to(bgRef.current, {
+        y: -100,
+        scrollTrigger: {
+          trigger: bgRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        }
+      });
+    }
+  
+    // 2. 水平スクロール (Pinを伴う重い処理)
+    if (triggerRef.current && sectionRef.current) {
+      gsap.fromTo(
+        sectionRef.current,
+        { translateX: 0 },
+        {
+          translateX: "-200vw",
+          ease: "none",
+          scrollTrigger: {
+            trigger: triggerRef.current,
+            start: "top top",
+            end: "+=2000",
+            scrub: 0.6,
+            pin: true,
+            markers: { startColor: "red", endColor: "red", label: "Horizontal" },
+            id: "horizontal",
+          },
+        }
+      );
+    }
+  
+    // 最後にリフレッシュ
+    ScrollTrigger.refresh();
+  
     return () => {
-      pin.kill(); // クリーンアップ
+      ScrollTrigger.getAll().forEach(t => t.kill());
     };
   }, []);
 
