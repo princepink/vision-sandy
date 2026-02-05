@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Box, Title, Text, Container, Center, Paper, SimpleGrid, Badge } from '@mantine/core';
+import { Box, Title, Text, Container, Center, Paper, SimpleGrid, Badge, Flex } from '@mantine/core';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ReactLenis } from 'lenis/react';
@@ -51,6 +51,28 @@ export default function GsapLenisPage() {
         scrub: 2, 
       },
     });
+
+    // --- 4. 水平スクロールの実装 ---
+    const pin = gsap.fromTo(
+      sectionRef.current,
+      { translateX: 0 },
+      {
+        translateX: "-200vw", // コンテンツ3つ分（100vw * 2）を左に流す
+        ease: "none",
+        scrollTrigger: {
+          trigger: triggerRef.current,
+          start: "top top",      // セクションが画面のてっぺんに来たら開始
+          end: "2000 top",       // 2000px分のスクロールが終わるまで固定
+          scrub: 0.6,
+          pin: true,             // 画面をその場に固定する！
+          anticipatePin: 1,
+        },
+      }
+    );
+
+    return () => {
+      pin.kill(); // クリーンアップ
+    };
   }, []);
 
   return (
@@ -121,6 +143,40 @@ export default function GsapLenisPage() {
             <Text c="dimmed">--- End of Lab ---</Text>
           </Center>
         </Container>
+
+        <Container size="md" style={{ height: '150vh' }}>
+            <Center style={{ height: '100vh' }}><Title>Scroll Down for Horizontal Section</Title></Center>
+            <Box ref={scrollBoxRef} style={{ width: 100, height: 100, backgroundColor: 'blue' }} />
+        </Container>
+
+        {/* --- 5. 水平スクロールセクション --- */}
+        <Box ref={triggerRef}>
+          <div style={{ height: '100vh', overflow: 'hidden' }}>
+            <Flex
+              ref={sectionRef}
+              style={{
+                width: '300vw', // 横に3画面分つなげる
+                height: '100vh',
+                position: 'relative',
+              }}
+            >
+              {/* 各パネル */}
+              <Center style={{ width: '100vw', backgroundColor: '#339af0' }}>
+                <Title c="white" order={1}>Horizontal Panel 1</Title>
+              </Center>
+              <Center style={{ width: '100vw', backgroundColor: '#51cf66' }}>
+                <Title c="white" order={1}>Horizontal Panel 2</Title>
+              </Center>
+              <Center style={{ width: '100vw', backgroundColor: '#ff922b' }}>
+                <Title c="white" order={1}>Horizontal Panel 3</Title>
+              </Center>
+            </Flex>
+          </div>
+        </Box>
+
+        <Center style={{ height: '100vh' }}>
+          <Title order={2}>And we are back to vertical!</Title>
+        </Center>
       </Box>
     </ReactLenis>
   );
