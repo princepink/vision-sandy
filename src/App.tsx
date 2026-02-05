@@ -7,7 +7,7 @@ import { useDisclosure } from '@mantine/hooks';
 // 各ページコンポーネント（後ほど作成）
 import Home from './pages/Home';
 import ReactBitsPage from './pages/ReactBits';
-// import MotionPage from './pages/Motion';
+import MotionPage from './pages/Motion';
 import GsapLenisPage from './pages/GsapLenis';
 // import LenisPage from './pages/Lenis';
 
@@ -17,7 +17,7 @@ export default function App() {
   return (
     <MantineProvider>
       <BrowserRouter>
-{/*
+
         <AppShell
           header={{ height: 60 }}
           navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
@@ -32,25 +32,23 @@ export default function App() {
             <Stack gap="sm">
               <NavLink component={Link} to="/" label="Home" />
               <NavLink component={Link} to="/react-bits" label="React Bits" />
-*/}
-              {/* <NavLink component={Link} to="/motion" label="Framer Motion" /> */}
-{/*
+              <NavLink component={Link} to="/motion" label="Framer Motion" />
               <NavLink component={Link} to="/gsap-lenis" label="GSAP + Lenis" />
             </Stack>
           </AppShell.Navbar>
   
           <AppShell.Main>
-*/}
+
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/react-bits" element={<ReactBitsPage />} />
-              {/* <Route path="/motion" element={<MotionPage />} /> */}
+              <Route path="/motion" element={<MotionPage />} />
               <Route path="/gsap-lenis" element={<GsapLenisPage />} />
             </Routes>
-{/*
+
           </AppShell.Main>
         </AppShell>
-*/}
+
       </BrowserRouter>
     </MantineProvider>
   );
