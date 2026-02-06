@@ -2,6 +2,7 @@ import { Title, Text, Container, Space, Box, SimpleGrid } from '@mantine/core';
 import SplitText from '../components/ReactBits/SplitText';
 import SpotlightCard from '../components/ReactBits/SpotlightCard';
 import Waves from '../components/ReactBits/Waves'; // GSAPを使用
+import styles from '../components/ReactBits/SplitText.module.scss';
 
 export default function ReactBitsPage() {
   return (
@@ -25,6 +26,9 @@ export default function ReactBitsPage() {
         <div style={{ height: '50vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <Title order={1}>Dynamic Layout Test</Title>
           <Text c="dimmed">背景で波が動き、カードがマウスに反応します</Text>
+          <div className={styles.container}>
+            <SplitText className={styles.text} text="Hello SCSS!" />
+          </div>
         </div>
 
         {/* 2. SpotlightCardの中にSplitTextを配置 */}
