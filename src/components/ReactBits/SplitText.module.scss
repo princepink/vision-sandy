@@ -1,0 +1,16 @@
+/* SplitText.module.scss */
+.container {
+  padding: 2rem;
+  background-color: var(--mantine-color-gray-0);
+
+  // ネスト: .container .text のこと
+  .text {
+    font-weight: bold;
+    color: var(--mantine-color-blue-filled);
+    
+    // 擬似要素もネスト内で書ける
+    &:hover {
+      color: var(--mantine-color-orange-filled);
+    }
+  }
+}
